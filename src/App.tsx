@@ -241,7 +241,7 @@ const App = () => {
           </div>
         )}
 
-        <div className="mt-auto mb-4 sm:mb-8 w-full px-1 sm:px-0">
+        <div className="mt-10 md:mt-auto mb-4 sm:mb-8 w-full px-1 sm:px-0">
           <Keyboard
             onKeyPress={handleKeyPress}
             guesses={guesses}
