@@ -5,12 +5,12 @@ import Keyboard from './components/Keyboard';
 type GameStatus = 'playing' | 'won' | 'lost';
 
 const App = () => {
-  const [solution] = useState(() => {
+  const getNewWord = () => {
     const wordsList = words.split('\n');
     return wordsList[Math.floor(Math.random() * wordsList.length)].toUpperCase();
-  });
+  };
 
-  console.log(solution);
+  const [solution, setSolution] = useState(getNewWord);
 
   const [guesses, setGuesses] = useState<string[]>([]);
   const [currentGuess, setCurrentGuess] = useState('');
@@ -48,6 +48,13 @@ const App = () => {
       setCurrentGuess(prev => prev + key);
     }
   }, [currentGuess, gameStatus, guesses, solution]);
+
+  const resetGame = () => {
+    setSolution(getNewWord());
+    setGuesses([]);
+    setCurrentGuess('');
+    setGameStatus('playing');
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -188,8 +195,16 @@ const App = () => {
         </div>
 
         {gameStatus !== 'playing' && (
-          <div className={`text-lg sm:text-xl font-bold pt-2 ${gameStatus === 'won' ? "text-green-500" : "text-[#c9d1d9]"}`}>
-            {gameStatus === 'won' ? 'Congratulations!' : `The word was ${solution}`}
+          <div className="text-center">
+            <div className={`text-lg sm:text-xl font-bold pt-2 ${gameStatus === 'won' ? "text-green-500" : "text-[#c9d1d9]"}`}>
+              {gameStatus === 'won' ? 'Congratulations!' : `The word was ${solution}`}
+            </div>
+            <button
+              onClick={resetGame}
+              className="mt-4 px-4 py-2 bg-[#238636] text-white rounded hover:bg-[#2ea043] transition-colors cursor-pointer"
+            >
+              Play Again
+            </button>
           </div>
         )}
 
