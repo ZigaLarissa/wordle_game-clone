@@ -2,6 +2,8 @@
 
 A modern implementation of the popular word-guessing game Wordle, built with React, TypeScript, and Vite. This project features a clean, responsive design with a dark theme interface.
 
+<img width="1470" alt="Screenshot 2025-04-14 at 10 32 31" src="https://github.com/user-attachments/assets/e2f9efb8-4cda-4af7-a127-a62e43bbb109" />
+
 ## Features
 
 - Classic Wordle gameplay with 6 attempts to guess a 5-letter word
