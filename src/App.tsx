@@ -18,9 +18,18 @@ const App = () => {
   const [showToast, setShowToast] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
   const [lastPressed, setLastPressed] = useState<string>('');
+  const [showHint, setShowHint] = useState(false);
+  const [showWordList, setShowWordList] = useState(true);
+  const [isGameActive, setIsGameActive] = useState(false);
+
+  const getHint = () => {
+    const vowels = ['A', 'E', 'I', 'O', 'U'];
+    const vowelCount = [...solution].filter(letter => vowels.includes(letter)).length;
+    return `Hint: The word starts with '${solution[0]}' and contains ${vowelCount} vowel${vowelCount !== 1 ? 's' : ''}.`;
+  };
 
   const handleKeyPress = useCallback((key: string) => {
-    if (gameStatus !== 'playing') return;
+    if (gameStatus !== 'playing' || showWordList) return; // Disable keyboard when study mode is open
 
     setLastPressed(key);
     // Clear the last pressed key after a short delay
@@ -37,6 +46,11 @@ const App = () => {
       setGuesses(newGuesses);
       setCurrentGuess('');
 
+      // Show hint after 3 failed attempts
+      if (newGuesses.length === 3 && currentGuess !== solution) {
+        setShowHint(true);
+      }
+
       if (currentGuess === solution) {
         setGameStatus('won');
       } else if (newGuesses.length === 6) {
@@ -47,13 +61,20 @@ const App = () => {
     } else if (currentGuess.length < 5) {
       setCurrentGuess(prev => prev + key);
     }
-  }, [currentGuess, gameStatus, guesses, solution]);
+  }, [currentGuess, gameStatus, guesses, solution, showWordList]);
+
+  const markWordsAsReviewed = () => {
+    setShowWordList(false);
+    setIsGameActive(true);
+  };
 
   const resetGame = () => {
     setSolution(getNewWord());
     setGuesses([]);
     setCurrentGuess('');
     setGameStatus('playing');
+    setShowHint(false);
+    setIsGameActive(false);
   };
 
   useEffect(() => {
@@ -73,22 +94,22 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-[#0d1117] flex relative overflow-hidden">
-      {/* Mobile Instructions Toggle Button - Hidden when sidebar is open */}
+      {/* Mobile Instructions Toggle Button */}
       <button
         onClick={() => setShowInstructions(prev => !prev)}
-        className={`md:hidden fixed top-4 left-4 z-20 bg-[#21262d] text-[#c9d1d9] w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95
+        className={`md:hidden fixed top-4 right-4 z-50 bg-[#21262d] text-[#c9d1d9] w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95
           ${showInstructions ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
         aria-label={showInstructions ? 'Close instructions' : 'Show instructions'}
       >
-        {!showInstructions && '?'}
+        ?
       </button>
 
-      {/* Game Rules Section - With improved layout */}
+      {/* Game Rules Section */}
       <div
         className={`fixed md:relative w-full md:w-1/4 h-screen bg-[#161b22] transform transition-transform duration-300 ease-in-out 
           ${showInstructions ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
           border-r border-[#30363d] text-[#c9d1d9] overflow-y-auto
-          md:block z-10`}
+          md:block z-40`}
       >
         {/* Mobile close button - positioned on the right */}
         <button
@@ -145,19 +166,25 @@ const App = () => {
 
       {/* Overlay for mobile when sidebar is open */}
       <div
-        className={`fixed inset-0 bg-black/50 z-[5] transition-opacity duration-300 md:hidden
+        className={`fixed inset-0 bg-black/50 z-35 transition-opacity duration-300 md:hidden
           ${showInstructions ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         onClick={() => setShowInstructions(false)}
       ></div>
 
       {/* Game Section */}
-      <div className="flex-1 flex flex-col items-center min-h-screen">
-        <header className="w-full border-b border-[#30363d] p-4 mb-4">
+      <div className={`flex-1 flex flex-col items-center min-h-screen ${showWordList ? 'opacity-50 pointer-events-none' : ''}`}>
+        <header className="w-full p-4 mb-4">
           <h1 className="text-2xl font-bold text-center text-[#c9d1d9]">WORDLE</h1>
           <p className="text-center text-sm text-[#8b949e] mt-1">
             Developed by John N - Inspired by New York Times
           </p>
         </header>
+
+        {showHint && gameStatus === 'playing' && (
+          <div className="mb-4 px-4 py-2 bg-[#21262d] text-[#c9d1d9] rounded-lg animate-slideDown">
+            {getHint()}
+          </div>
+        )}
 
         <div className="grid grid-rows-6 gap-1 sm:gap-2 px-1 sm:px-2 mb-4">
           {[...Array(6)].map((_, rowIndex) => (
@@ -223,6 +250,63 @@ const App = () => {
           />
         </div>
       </div>
+
+      {/* Word List Study Section */}
+      <div className={`fixed right-0 top-0 md:relative w-full md:w-1/4 h-screen bg-[#161b22] transform transition-transform duration-300 ease-in-out 
+        ${showWordList ? 'translate-x-0' : 'translate-x-full md:translate-x-full'}
+        border-l border-[#30363d] text-[#c9d1d9] overflow-y-auto z-30`}
+      >
+        <div className="p-8">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-white">Study Mode</h2>
+          </div>
+
+          <div className="space-y-6">
+            <div className="bg-[#21262d] rounded-lg p-4">
+              <p className="text-[#8b949e] text-sm mb-4">
+                Take time to review the possible words before starting your game. This list will be hidden during gameplay to maintain the challenge.
+              </p>
+              <div className="max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-[#30363d] scrollbar-track-transparent pr-2">
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  {words.split('\n').map((word, index) => (
+                    <div key={index} className="bg-[#30363d] px-3 py-1 rounded text-[#c9d1d9] uppercase">
+                      {word}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <button
+                onClick={markWordsAsReviewed}
+                className="mt-6 w-full px-4 py-2 bg-[#238636] text-white rounded hover:bg-[#2ea043] transition-colors"
+              >
+                Start Playing
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Study Mode Toggle Button */}
+      {!showWordList && (
+        <button
+          onClick={() => !isGameActive && setShowWordList(true)}
+          className={`fixed bottom-4 right-4 z-20 px-4 py-2 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 
+            ${isGameActive
+              ? 'bg-[#30363d] text-[#8b949e] cursor-not-allowed'
+              : 'bg-[#238636] text-white hover:bg-[#2ea043] active:scale-95 cursor-pointer'}`}
+          disabled={isGameActive}
+          title={isGameActive ? "Cannot study words during an active game" : "Study the word list"}
+        >
+          Study Words
+        </button>
+      )}
+
+      {/* Overlay for mobile when word list is open */}
+      <div
+        className={`fixed inset-0 bg-black/50 z-25 transition-opacity duration-300 md:hidden
+          ${showWordList ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        onClick={() => setShowWordList(false)}
+      ></div>
     </div>
   );
 };
