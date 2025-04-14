@@ -11,7 +11,6 @@ const App = () => {
   };
 
   const [solution, setSolution] = useState(getNewWord);
-
   const [guesses, setGuesses] = useState<string[]>([]);
   const [currentGuess, setCurrentGuess] = useState('');
   const [gameStatus, setGameStatus] = useState<GameStatus>('playing');
