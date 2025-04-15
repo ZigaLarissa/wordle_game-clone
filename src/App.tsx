@@ -35,7 +35,7 @@ const App = () => {
     setTimeout(() => setLastPressed(''), 200);
 
     if (key === 'ENTER') {
-      if (currentGuess.length !== 5) return;
+      // if (currentGuess.length !== 5) return;
       if (!words.includes(currentGuess.toLowerCase())) {
         setShowToast(true);
         setTimeout(() => setShowToast(false), 2000);
@@ -130,7 +130,7 @@ const App = () => {
                 </li>
                 <li className="flex items-center">
                   <span className="text-[#58a6ff] mr-2">•</span>
-                  Each guess must be a valid 5-letter word
+                  Each guess must fill the provide row
                 </li>
               </ul>
             </div>
@@ -173,9 +173,9 @@ const App = () => {
       {/* Game Section */}
       <div className={`flex-1 flex flex-col items-center min-h-screen ${showWordList ? 'opacity-50 pointer-events-none' : ''}`}>
         <header className="w-full p-4 mb-4">
-          <h1 className="text-2xl font-bold text-center text-[#c9d1d9]">WORDLE</h1>
+          <h1 className="text-2xl font-bold text-center text-[#c9d1d9]">Bible Word Scramble</h1>
           <p className="text-center text-sm text-[#8b949e] mt-1">
-            Developed by John N - Inspired by New York Times
+            Developed by Ziga Larissa - Inspired by John N and the original Wordle game.
           </p>
         </header>
 
@@ -187,8 +187,14 @@ const App = () => {
 
         <div className="grid grid-rows-6 gap-1 sm:gap-2 px-1 sm:px-2 mb-4">
           {[...Array(6)].map((_, rowIndex) => (
-            <div key={rowIndex} className="grid grid-cols-5 gap-1 sm:gap-2">
-              {[...Array(5)].map((_, colIndex) => {
+            // each row has columns equal to the length of the solution
+            // if it is a 5 letter word, so 5 columns
+            <div 
+              key={rowIndex} 
+              className="grid gap-1 sm:gap-2"
+              style={{ gridTemplateColumns: `repeat(${solution.length}, 1fr)` }}
+            >
+              {[...Array(solution.length)].map((_, colIndex) => {
                 const letter = guesses[rowIndex]?.[colIndex] ??
                   (rowIndex === guesses.length ? currentGuess[colIndex] : '');
                 const isCurrentRow = rowIndex === guesses.length;
@@ -227,7 +233,7 @@ const App = () => {
             </div>
             <button
               onClick={resetGame}
-              className="mt-4 px-4 py-2 bg-[#238636] text-white rounded hover:bg-[#2ea043] transition-colors cursor-pointer"
+              className="my-4 px-4 py-2 bg-[#238636] text-white rounded hover:bg-[#2ea043] transition-colors cursor-pointer"
             >
               Play Again
             </button>
