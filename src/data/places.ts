@@ -1,4 +1,4 @@
-const words = `antioch
+const places = `antioch
 ararat
 assyria
 athens
@@ -98,4 +98,4 @@ troas
 tyre
 ur
 zion`;
-export default words;
+export default places;
