@@ -2,13 +2,14 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Keyboard from '../components/Keyboard';
 import { getWordList } from '../data'
+import { GameType } from '../data';
 
 type GameStatus = 'playing' | 'won' | 'lost';
 
 const GamePage = () => {
   const { gameType } = useParams();
   const navigate = useNavigate();
-  const words = getWordList(gameType || 'chapters');
+  const words = getWordList(gameType as GameType || 'chapters');
   
   const getNewWord = () => {
     const wordsList = words.split('\n');
