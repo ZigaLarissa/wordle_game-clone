@@ -1,4 +1,4 @@
-const chapters = `genesis
+const words = `genesis
 exodus
 leviticus
 numbers
@@ -55,4 +55,4 @@ peter
 john
 jude
 revelation`;
-export default chapters;
+export default words;

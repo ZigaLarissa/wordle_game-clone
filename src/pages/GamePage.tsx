@@ -302,7 +302,7 @@ const GamePage = () => {
               </p>
               <div className="max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-[#30363d] scrollbar-track-transparent pr-2">
                 <div className="grid grid-cols-2 gap-2 text-sm">
-                  {words.split('\n').map((word, index) => (
+                  {words.split('\n').map((word: string, index: number) => (
                     <div key={index} className="bg-[#30363d] px-3 py-1 rounded text-[#c9d1d9] uppercase">
                       {word}
                     </div>

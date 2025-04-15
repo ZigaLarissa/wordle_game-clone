@@ -1,4 +1,4 @@
-const characters = `aaron
+const words = `aaron
 abel
 abigail
 abimelech
@@ -147,4 +147,4 @@ zedekiah
 zerubbabel
 zilpah
 zipporah`;
-export default characters;
+export default words;
